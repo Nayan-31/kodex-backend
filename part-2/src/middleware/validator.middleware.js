@@ -7,6 +7,8 @@ const respondWithValidationResult = (req,res,next)=>{
         errors : errors.array()
      })
     }
+    next()
+
 }
 
 const notesValidation = [

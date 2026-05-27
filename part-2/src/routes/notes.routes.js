@@ -1,13 +1,14 @@
 let express = require('express')
 let router = express.Router()
-const {
-  noteCreateController,
-  noteReadController,
-  noteUpdateController,
-  noteDeleteController
-} = require('../controllers/notes.controller')
 
-let notesValidation = require('../middleware/validator.middleware')
+const {
+  createNoteController,
+  readNoteController,
+  updateNoteController
+} = require('../controller/notes.controller')
+
+let {notesValidation} = require('../middleware/validator.middleware')
+
 
 /**
  * @routes POST /api/notes/create
@@ -15,7 +16,9 @@ let notesValidation = require('../middleware/validator.middleware')
  * @access public
  */
 
-router.post('/create' , notesValidation , noteCreateController)
+
+router.post('/create' , notesValidation , createNoteController)
+
 
 
 /**
@@ -24,7 +27,8 @@ router.post('/create' , notesValidation , noteCreateController)
  * @access public
  */
 
-router.get('/read' , noteReadController)
+router.get('/read' , readNoteController)
+
 
 /**
  * @routes PATCH /api/notes/update
@@ -32,7 +36,9 @@ router.get('/read' , noteReadController)
  * @access public
  */
 
-router.patch('/update' ,notesValidation , noteUpdateController)
+router.patch('/update' ,notesValidation , updateNoteController)
+
+
 
 /**
  * @routes DELETE /api/notes/delete
@@ -40,6 +46,6 @@ router.patch('/update' ,notesValidation , noteUpdateController)
  * @access public
  */
 
-router.delete('/delete' , noteDeleteController)
+// router.delete('/delete' , noteDeleteController)
 
 module.exports = router
