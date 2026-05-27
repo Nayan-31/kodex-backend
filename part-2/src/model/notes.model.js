@@ -1,6 +1,8 @@
 let mongoose = require('mongoose')
 
-let userSchema = new mongoose.Schema(
+
+let notesSchema = new mongoose.Schema(
+
     {
         title : String,
         description : String
