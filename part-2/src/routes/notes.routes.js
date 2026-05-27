@@ -1,13 +1,13 @@
 let express = require('express')
 let router = express.Router()
-
+let notesValidation = require('../middleware/validator.middleware')
 /**
  * @routes POST /api/notes/create
  * @description create a new note need title and description
  * @access public
  */
 
-router.post('/create' , noteCreateController)
+router.post('/create' , notesValidation , noteCreateController)
 
 /**
  * @routes POST /api/notes/read
@@ -23,7 +23,7 @@ router.get('/read' , noteReadController)
  * @access public
  */
 
-router.patch('/update' , noteUpdateController)
+router.patch('/update' ,notesValidation , noteUpdateController)
 
 /**
  * @routes POST /api/notes/delete
