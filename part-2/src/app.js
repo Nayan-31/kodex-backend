@@ -4,6 +4,6 @@ let app = express()
 
 app.use(express.json())
 
-app.use('/api/notes')
+app.use('/api/notes' , notesRoute)
 
 module.exports = app
