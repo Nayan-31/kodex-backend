@@ -1,4 +1,5 @@
 let express = require('express')
+const { createNoteController, readNoteController, updateNoteController } = require('../controller/notes.controller')
 
 let router = express.Router()
 
@@ -8,7 +9,7 @@ let router = express.Router()
 * @access public
 */
 
-router.post('/create')
+router.post('/create' , createNoteController)
 
 /**
  * @route GET /get
@@ -16,7 +17,7 @@ router.post('/create')
  * @access public
  */
 
-router.get('/get')
+router.get('/get' , readNoteController)
 
 /**
  * @route /:id
@@ -24,5 +25,6 @@ router.get('/get')
  * @access public
  */
 
+router.patch('/update' , updateNoteController)
 
 module.exports = router
