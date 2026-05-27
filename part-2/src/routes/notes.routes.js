@@ -1,13 +1,25 @@
 let express = require('express')
 let router = express.Router()
 
+
+const {
+  createNoteController,
+  readNoteController,
+  updateNoteController
+} = require('../controller/notes.controller')
+
+let {notesValidation} = require('../middleware/validator.middleware')
+
+
 /**
  * @routes POST /api/notes/create
  * @description create a new note need title and description
  * @access public
  */
 
-router.post('/create' , noteCreateController)
+
+router.post('/create' , notesValidation , createNoteController)
+
 
 /**
  * @routes POST /api/notes/read
@@ -15,7 +27,7 @@ router.post('/create' , noteCreateController)
  * @access public
  */
 
-router.get('/read' , noteReadController)
+router.get('/read' , readNoteController)
 
 /**
  * @routes POST /api/notes/update
@@ -23,7 +35,8 @@ router.get('/read' , noteReadController)
  * @access public
  */
 
-router.patch('/update' , noteUpdateController)
+router.patch('/update' ,notesValidation , updateNoteController)
+
 
 /**
  * @routes POST /api/notes/delete
@@ -31,6 +44,6 @@ router.patch('/update' , noteUpdateController)
  * @access public
  */
 
-router.delete('/delete' , noteDeleteController)
+// router.delete('/delete' , noteDeleteController)
 
 module.exports = router
