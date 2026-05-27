@@ -1,6 +1,14 @@
 let express = require('express')
 let router = express.Router()
+const {
+  noteCreateController,
+  noteReadController,
+  noteUpdateController,
+  noteDeleteController
+} = require('../controllers/notes.controller')
+
 let notesValidation = require('../middleware/validator.middleware')
+
 /**
  * @routes POST /api/notes/create
  * @description create a new note need title and description
@@ -9,8 +17,9 @@ let notesValidation = require('../middleware/validator.middleware')
 
 router.post('/create' , notesValidation , noteCreateController)
 
+
 /**
- * @routes POST /api/notes/read
+ * @routes GET /api/notes/read
  * @description get all the notes
  * @access public
  */
@@ -18,7 +27,7 @@ router.post('/create' , notesValidation , noteCreateController)
 router.get('/read' , noteReadController)
 
 /**
- * @routes POST /api/notes/update
+ * @routes PATCH /api/notes/update
  * @description update the notes by getting the id and it's done
  * @access public
  */
@@ -26,7 +35,7 @@ router.get('/read' , noteReadController)
 router.patch('/update' ,notesValidation , noteUpdateController)
 
 /**
- * @routes POST /api/notes/delete
+ * @routes DELETE /api/notes/delete
  * @description get the id of that note and then filter it out
  * @access public
  */
