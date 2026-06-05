@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private Chat</title>
+</head>
+<body>
+
+  <h2>Private Chat</h2>
+
+  <input id="username" placeholder="Enter your name">
+  <button onclick="register()">Register</button>
+
+<br><br>
+
+  <input id="receiver" placeholder="Send to">
+  <input id="message" placeholder="Message">
+  <button onclick="sendMessage()">Send</button>
+
+  <hr>
+
+  <h3>Messages</h3>
+  <ul id="messages"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    const socket = io(); //issey client gets connected to server after calling io function
+
+    function register() {
+      const userId = document.getElementById("username").value;
+
+      socket.emit("registeredUser", userId);
+
+      console.log("Registered:", userId);
+    }
+
+    function sendMessage() {
+      const userId = document.getElementById("receiver").value;
+      const text = document.getElementById("message").value;
+
+      socket.emit("privateMessage", {
+        userId,
+        text
+      });
+
+      const li = document.createElement("li");
+      li.textContent = `You: ${text}`;
+
+      document.getElementById("messages").appendChild(li);
+
+      document.getElementById("message").value = "";
+    }
+
+    socket.on("privateMessage", (data) => {
+      console.log("Received:", data);
+
+      const li = document.createElement("li");
+      li.textContent = `${data.text}`;
+
+      document.getElementById("messages").appendChild(li);
+    });
+  </script>
+
+</body>
+</html>
