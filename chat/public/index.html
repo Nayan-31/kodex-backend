@@ -27,7 +27,13 @@
   <script src="/socket.io/socket.io.js"></script>
 
   <script>
-    const socket = io(); //issey client gets connected to server after calling io function
+    const roomName = prompt("enter your room name")
+
+    const socket = io({ //issey client gets connected to server after calling io function
+        query : {
+            room : roomName
+        }
+    }); 
 
     function register() {
       const userId = document.getElementById("username").value;
