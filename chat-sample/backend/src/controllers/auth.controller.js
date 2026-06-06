@@ -12,7 +12,8 @@ export const register = asyncHandler(async (req, res) => {
 
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production'
+        secure: true, // Must be true for cross-site cookies
+        sameSite: 'none' // Crucial for Vercel -> Render cross-domain cookies
     }
 
     return res
@@ -36,7 +37,8 @@ export const login = asyncHandler(async (req, res) => {
 
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production'
+        secure: true, // Must be true for cross-site cookies
+        sameSite: 'none' // Crucial for Vercel -> Render cross-domain cookies
     }
 
     return res

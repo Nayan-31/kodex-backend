@@ -5,7 +5,7 @@ const userSocketMap = {}
 export default function initSocketServer(httpServer) {
     const io = new Server(httpServer, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: ["http://localhost:5173", "https://chatsphere-henna-five.vercel.app"],
             methods: ["GET", "POST"]
         }
     })
