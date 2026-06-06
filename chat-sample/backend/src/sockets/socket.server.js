@@ -13,11 +13,11 @@ export default function initSocketServer(httpServer) {
     io.on('connection', (socket) => {
         console.log("a user connected", socket.id)
 
-        // The user joins a room based on the chat ID when they open a chat window (for Groups)
-        const { room } = socket.handshake?.query || {}
-        if (room) {
-            socket.join(room)
-        }
+        // The user joins a room dynamically (for Groups)
+        socket.on("joinRoom", (roomId) => {
+            socket.join(roomId)
+            console.log(`Socket ${socket.id} joined room ${roomId}`)
+        })
 
         // 1-to-1 User Registration
         socket.on("registeredUser", (userId) => {

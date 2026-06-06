@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
-import { io } from 'socket.io-client'
 import { Send, Loader2, Video, Settings, Plus, Smile, MessageSquare, Users, ChevronLeft } from 'lucide-react'
 
-// Keep socket outside component to avoid reconnects on every render
-let socket
-
 export default function ChatWindow({ chat, onBack }) {
-    const { user } = useAuth()
+    const { user, socket } = useAuth()
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
     const [loading, setLoading] = useState(false)
@@ -43,26 +39,32 @@ export default function ChatWindow({ chat, onBack }) {
 
         fetchMessages()
 
-        // Socket setup
-        socket = io("http://localhost:8000", {
-            query: { room: chat._id }
-        })
+        fetchMessages()
+    }, [chat]) // Only fetch when chat changes
 
-        // Register the user with socket for 1-to-1 routing
-        socket.emit("registeredUser", user._id)
+    // Socket listeners
+    useEffect(() => {
+        if (!socket) return
 
-        // Listen for incoming messages
-        socket.on("PrivateMessage", (receivedMsg) => {
+        // Join the room if it's a group chat
+        if (chat?.isGroupChat) {
+            socket.emit("joinRoom", chat._id)
+        }
+
+        const handlePrivateMessage = (receivedMsg) => {
             // Append the message if it belongs to this chat
-            if (receivedMsg.chat._id === chat._id || receivedMsg.chat === chat._id) {
+            if (receivedMsg.chat._id === chat?._id || receivedMsg.chat === chat?._id) {
                 setMessages((prev) => [...prev, receivedMsg])
+                scrollToBottom()
             }
-        })
+        }
+
+        socket.on("PrivateMessage", handlePrivateMessage)
 
         return () => {
-            socket.disconnect()
+            socket.off("PrivateMessage", handlePrivateMessage)
         }
-    }, [chat, user._id])
+    }, [socket, chat?._id]) // Re-bind listener if chat changes
 
     const sendMessage = async (e) => {
         e.preventDefault()
@@ -82,11 +84,13 @@ export default function ChatWindow({ chat, onBack }) {
             setMessages((prev) => [...prev, savedMessage])
 
             // 2. Emit to socket
-            // We pass userId so the backend knows who to send it to if it's a 1-to-1 chat!
-            socket.emit("PrivateMessage", {
-                ...savedMessage,
-                userId: otherUser?._id // The target user for 1-to-1 routing
-            })
+            if (socket) {
+                // We pass userId so the backend knows who to send it to if it's a 1-to-1 chat!
+                socket.emit("PrivateMessage", {
+                    ...savedMessage,
+                    userId: otherUser?._id // The target user for 1-to-1 routing
+                })
+            }
             
         } catch (error) {
             console.error("Failed to send message", error)

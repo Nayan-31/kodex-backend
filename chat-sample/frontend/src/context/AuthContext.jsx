@@ -1,24 +1,42 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { api } from '../lib/api'
+import { io } from 'socket.io-client'
 
 const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
+    const [socket, setSocket] = useState(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Check if user is logged in on load
-        // Usually, we'd have a /me endpoint, but for simplicity, we can rely on local storage or just keep them logged in while the session lasts.
-        // Let's check local storage for user data.
         const storedUser = localStorage.getItem('chat-user')
         if (storedUser) {
             const parsed = JSON.parse(storedUser)
-            // Handle if the old token wrapper was cached by mistake
             setUser(parsed.user || parsed)
         }
         setLoading(false)
     }, [])
+
+    useEffect(() => {
+        if (user) {
+            // Use the same domain if deploying to production, or localhost for dev
+            const socketUrl = import.meta.env.VITE_API_URL 
+                ? import.meta.env.VITE_API_URL.replace('/api/v1', '') 
+                : 'https://kodex-backend-chat-sample.onrender.com'
+                
+            const newSocket = io(socketUrl)
+            newSocket.emit("registeredUser", user._id)
+            setSocket(newSocket)
+
+            return () => {
+                newSocket.disconnect()
+            }
+        } else if (socket) {
+            socket.disconnect()
+            setSocket(null)
+        }
+    }, [user])
 
     const login = async (email, password) => {
         const { data } = await api.post('/auth/login', { email, password })
@@ -39,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, socket, loading, login, register, logout }}>
             {!loading && children}
         </AuthContext.Provider>
     )
