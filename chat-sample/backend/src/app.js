@@ -8,24 +8,32 @@ import errorHandler from './middlewares/error.middleware.js'
 import authRoutes from './routes/auth.routes.js'
 import chatRoutes from './routes/chat.routes.js'
 import messageRoutes from './routes/message.routes.js'
+import userRoutes from './routes/user.routes.js'
 
-const __fileName = fileURLToPath(import.meta.url) //extracts the absolute local file system path
-const __dirname = path.dirname(__fileName) //directory name
+const __fileName = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__fileName)
 
 const app = express()
 
-// Global Middlewares
-app.use(cors())
+// Enable CORS
+app.use(cors({
+    origin: "http://localhost:5173", // Vite default port
+    credentials: true
+}))
+
+// Middleware to parse JSON request bodies
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// Apply rate limiting to all requests
 app.use(cookieParser())
 app.use(limiter)
-
 // Middleware to serve static files from 'public' directory
 app.use(express.static(path.join(__dirname, "..", "public")))
 
 // Routes
 app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/users', userRoutes)
 app.use('/api/v1/chats', chatRoutes)
 app.use('/api/v1/messages', messageRoutes)
 
