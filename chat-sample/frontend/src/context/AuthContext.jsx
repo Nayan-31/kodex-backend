@@ -13,21 +13,23 @@ export const AuthProvider = ({ children }) => {
         // Let's check local storage for user data.
         const storedUser = localStorage.getItem('chat-user')
         if (storedUser) {
-            setUser(JSON.parse(storedUser))
+            const parsed = JSON.parse(storedUser)
+            // Handle if the old token wrapper was cached by mistake
+            setUser(parsed.user || parsed)
         }
         setLoading(false)
     }, [])
 
     const login = async (email, password) => {
         const { data } = await api.post('/auth/login', { email, password })
-        setUser(data.data)
-        localStorage.setItem('chat-user', JSON.stringify(data.data))
+        setUser(data.data.user)
+        localStorage.setItem('chat-user', JSON.stringify(data.data.user))
     }
 
     const register = async (username, email, password) => {
         const { data } = await api.post('/auth/register', { username, email, password })
-        setUser(data.data)
-        localStorage.setItem('chat-user', JSON.stringify(data.data))
+        setUser(data.data.user)
+        localStorage.setItem('chat-user', JSON.stringify(data.data.user))
     }
 
     const logout = async () => {
