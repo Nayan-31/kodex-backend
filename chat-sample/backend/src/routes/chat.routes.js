@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { accessChat, fetchChats } from '../controllers/chat.controller.js'
+import { accessChat, fetchChats, createGroupChat } from '../controllers/chat.controller.js'
 import { authMiddleware } from '../middlewares/auth.middleware.js'
 
 const router = Router()
@@ -20,5 +20,12 @@ router.post('/', accessChat)
  * @access  Private
  */
 router.get('/', fetchChats)
+
+/**
+ * @route   POST /api/v1/chats/group
+ * @desc    Create a new group chat
+ * @access  Private
+ */
+router.post('/group', createGroupChat)
 
 export default router

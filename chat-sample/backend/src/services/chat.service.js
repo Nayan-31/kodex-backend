@@ -66,3 +66,32 @@ export const fetchChats = async (loggedInUserId) => {
         throw new ApiError(STATUS.SERVER_ERROR, "Error fetching chats")
     }
 }
+
+export const createGroupChat = async (users, chatName, groupAdminId) => {
+    if (!users || !chatName) {
+        throw new ApiError(STATUS.BAD_REQUEST, "Please fill all the fields")
+    }
+
+    if (users.length < 2) {
+        throw new ApiError(STATUS.BAD_REQUEST, "More than 2 users are required to form a group chat")
+    }
+
+    users.push(groupAdminId)
+
+    try {
+        const groupChat = await Chat.create({
+            chatName: chatName,
+            users: users,
+            isGroupChat: true,
+            groupAdmin: groupAdminId
+        })
+
+        const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
+            .populate("users", "-password")
+            .populate("groupAdmin", "-password")
+
+        return fullGroupChat
+    } catch (error) {
+        throw new ApiError(STATUS.SERVER_ERROR, "Error creating group chat")
+    }
+}
