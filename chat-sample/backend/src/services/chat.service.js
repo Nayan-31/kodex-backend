@@ -3,7 +3,7 @@ import { User } from '../models/user.model.js'
 import ApiError from '../utils/ApiError.js'
 import { STATUS } from '../constants/httpStatus.js'
 
-export const accessChat = async (userId, loggedInUserId) => {
+export const accessChat = async (userId, loggedInUserId) => { //Get or Create a one-to-one chat with a specific user.
     if (!userId) {
         throw new ApiError(STATUS.BAD_REQUEST, "UserId parameter is required")
     }
@@ -11,7 +11,7 @@ export const accessChat = async (userId, loggedInUserId) => {
     // We use $elemMatch to precisely find a chat array that contains BOTH the logged-in user and the target user.
     // This prevents creating duplicate 1-on-1 chats if they already talked before.
     let isChat = await Chat.find({
-        isGroupChat: false,
+        isGroupChat: false, //Sirf personal chats dhundo. Group chats nahi.
         $and: [
             { users: { $elemMatch: { $eq: loggedInUserId } } },
             { users: { $elemMatch: { $eq: userId } } }
@@ -22,8 +22,8 @@ export const accessChat = async (userId, loggedInUserId) => {
 
     // We do a second population to get the details of the user who sent that latestMessage
     isChat = await User.populate(isChat, {
-        path: "latestMessage.sender",
-        select: "username email"
+        path: "latestMessage.sender", //path batata hai ki kis field ko populate karna hai.
+        select: "username email" //User document ke kaunse fields chahiye.
     })
 
     if (isChat.length > 0) {
@@ -46,7 +46,7 @@ export const accessChat = async (userId, loggedInUserId) => {
     }
 }
 
-export const fetchChats = async (loggedInUserId) => {
+export const fetchChats = async (loggedInUserId) => { //Get all chats of the logged-in user.Ye function sidebar me saari chats laata hai.
     try {
         // Find all chats where the currently logged-in user is part of the "users" array
         let results = await Chat.find({ users: { $elemMatch: { $eq: loggedInUserId } } })
