@@ -3,7 +3,7 @@ import { User } from '../models/user.model.js'
 import ApiError from '../utils/ApiError.js'
 import { STATUS } from '../constants/httpStatus.js'
 
-export const accessChat = async (userId, loggedInUserId) => {
+export const accessChat = async (userId, loggedInUserId) => { //Get or Create a one-to-one chat with a specific user.
     if (!userId) {
         throw new ApiError(STATUS.BAD_REQUEST, "UserId parameter is required")
     }
@@ -46,7 +46,7 @@ export const accessChat = async (userId, loggedInUserId) => {
     }
 }
 
-export const fetchChats = async (loggedInUserId) => {
+export const fetchChats = async (loggedInUserId) => { //Get all chats of the logged-in user.
     try {
         // Find all chats where the currently logged-in user is part of the "users" array
         let results = await Chat.find({ users: { $elemMatch: { $eq: loggedInUserId } } })
